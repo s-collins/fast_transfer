@@ -104,9 +104,16 @@ void packet ()
 
 void frame ()
 {
-    match(INDEX);
-    match(DATA);
-    match(DATA);
+    //-------------------------------------------------------------------------
+    // TODO: INDEX and DATA should actually be treated as non-terminal nodes
+    //       with their own functions because they may consist of multiple
+    //       bytes.  That way, I can verify that they are within the valid
+    //       ranges.  This will require me to add a new terminal called "byte"
+    //-------------------------------------------------------------------------
+    for (int i = 0; i < INDEX_SZ; ++i)
+        match(INDEX);
+    for (int i = 0; i < DATA_SZ; ++i)
+        match(DATA);
 }
 
 //------------------------------------------------------------------------------
@@ -122,8 +129,8 @@ void match (uint8_t terminal)
     {
         case START1:  lookahead == 0x06         ? advance() : flag_error();
         when START2:  lookahead == 0x85         ? advance() : flag_error();
-        when ADDRESS: isValidAddress(lookahead) ? advance() : flag_error();
-        when LENGTH:  isValidLength(lookahead)  ? advance() : flag_error();
+        when ADDRESS: lookahead  < 255          ? advance() : flag_error();
+        when LENGTH:  lookahead  < 255          ? advance() : flag_error();
         when INDEX:   isValidIndex(lookahead)   ? advance() : flag_error();
         when DATA:    ; // TODO: implement this (transfer bytes and advance)
         when CRC:     isCorrectCRC(lookahead)   ? advance() : flag_error();
