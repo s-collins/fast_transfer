@@ -130,7 +130,7 @@ TEST_F (FastTransferTests, ParsingMessageWithInvalidCRCDoesNotChangeArray) {
 TEST_F (FastTransferTests, GargabeBeforeValidMessageDoesNotBreakParsing) {
     // Receive some garbage, then receive a valid message.
     receive_1({0x01, 0x02, 0x03, 0x04, 0x05});
-    receive_1({0x06, 0x85, 0x02, 0x01, 0x04, 0x00, 0x01, 0xFF, 0xFF, 0x1F});
+    receive_1({0x06, 0x85, 0x02, 0x01, 0x04, 0x00, 0c01, 0xFF, 0xFF, 0x1F});
     FT_ScanPort(port_1);
 
     // Verify that the data from valid message was written

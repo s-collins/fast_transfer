@@ -1,6 +1,8 @@
 #include "ft.parser.h"
 #include "ft.buffer.h"
 #include "ft.crc.h"
+#include "ft.convert.h"
+#include <stdio.h>
 
 #define ERROR     1
 #define SUCCESS   0
@@ -16,23 +18,12 @@ static int message ();
 static int header ();
 static int packet ();
 static int frame ();
-static int index ();
+static int arr_index ();
 static int data ();
 static int match (uint8_t);
 
-
 // Constants to represent terminal nodes
-enum
-{
-    START1,
-    START2,
-    SENDER,
-    RECEIVER,
-    LENGTH,
-    INDEX,
-    DATA,
-    CRC
-};
+enum { START1, START2, SENDER, RECEIVER, LENGTH, INDEX, DATA, CRC };
 
 //------------------------------------------------------------------------------
 // Private Variables ('s' prefix means static variable)
@@ -40,10 +31,11 @@ enum
 
 static Buffer * s_buffer;
 static Data_t * s_array;
-static int      s_offset;   // Index of next byte in buffer to be parsed
-static int      s_pkt_sz;   // Num. bytes in packet (excluding header and crc)
+static int      s_offset;     // Index of next byte in buffer to be parsed
+static int      s_pkt_sz;     // Num. bytes in packet (excluding header and crc)
 static int      s_msg_index;
 static uint8_t  s_msg [MAX_PCKT_SZ];
+static int      s_not_enough_in_buffer;
 
 //------------------------------------------------------------------------------
 // Public Parsing Function
@@ -60,38 +52,33 @@ void parse (Buffer * input_buffer, Data_t * destination)
 {
     s_buffer = input_buffer;
     s_array = destination;
+    s_not_enough_in_buffer = 0;
     reset();
 
-    while (s_offset < getSize(s_buffer)) // Parse as long as the buffer has bytes
+    // Parse as long as the buffer has bytes
+    while (s_offset < getSize(s_buffer))
     {
-        message() ? pop(s_buffer) : write_message_data();
+        if (message())
+        {
+            if (s_not_enough_in_buffer)
+                return;
+            else
+                pop(s_buffer);
+        }
+        else
+            write_message_data();
         reset();
     }
 }
 
 static void write_message_data ()
 {
-    for (int i = 0; i < s_pkt_sz; i += INDEX_SZ + DATA_SZ)
+    for (int i = 0; i < s_pkt_sz; i += FRAME_SZ)
     {
-        // calculate the index
-        Index_t array_index = 0;
-        for (int j = 0; j < INDEX_SZ; ++j)
-        {
-            int shift = 8 * (INDEX_SZ - j - 1);
-            array_index |= (s_msg[i + j] << shift);
-        }
-
-        // calculate the data
-        UnsignedData_t tmp = 0;
-        for (int j = 0; j < DATA_SZ; ++j)
-        {
-            int shift = 8 * (DATA_SZ - j - 1);
-            tmp |= (s_msg[i + j + INDEX_SZ] << shift);
-        }
-
-        // Write data if the index is valid
+        Index_t array_index = combine_index_bytes(&s_msg[i]);
+        Data_t  data        = combine_data_bytes (&s_msg[i + INDEX_SZ]);
         if (array_index < ARRAY_SZ)
-            s_array[array_index] = (Data_t)tmp;
+            s_array[array_index] = data;
     }
     for (int i = 0; i < s_offset; ++i)
         pop(s_buffer);
@@ -126,7 +113,7 @@ static int header ()
 
 static int packet ()
 {
-    int num_frames = s_pkt_sz / (INDEX_SZ + DATA_SZ);
+    int num_frames = s_pkt_sz / FRAME_SZ;
     for (int i = 0; i < num_frames; ++i)
         if (frame())
             return ERROR;
@@ -135,12 +122,12 @@ static int packet ()
 
 static int frame ()
 {
-    if (index() || data())
+    if (arr_index() || data())
         return ERROR;
     return SUCCESS;
 }
 
-static int index ()
+static int arr_index ()
 {
     for (int i = 0; i < INDEX_SZ; ++i)
         if (match(INDEX))
@@ -172,6 +159,11 @@ static int data ()
 
 static int match (uint8_t terminal)
 {
+    if (s_offset >= getSize(s_buffer))
+    {
+        s_not_enough_in_buffer = 1;
+        return ERROR;
+    }
     uint8_t next = getValue(s_buffer, s_offset);
     int status = SUCCESS;
     switch (terminal)
@@ -188,8 +180,7 @@ static int match (uint8_t terminal)
                        status = SUCCESS;
         when CRC:      status = (next == crc(s_msg, s_pkt_sz) ? SUCCESS : ERROR);
     }
-    if (status == SUCCESS) {
+    if (status == SUCCESS)
         ++s_offset;
-    }
     return status;
 }

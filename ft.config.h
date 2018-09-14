@@ -6,11 +6,17 @@
 // Configuration (input your settings for the library here)
 //------------------------------------------------------------------------------
 
-#define INDEX_SZ    2                // Size of index type [bytes]
-#define DATA_SZ     2                // Size of data value [bytes]
-#define MAX_PCKT_SZ 200              // Max size of packet [bytes]
-#define ARRAY_SZ    1<<(INDEX_SZ*8)  // Length of array
+#define INDEX_SZ    1     // Size of index type [bytes]
+#define DATA_SZ     4     // Size of data value [bytes]
+#define MAX_PCKT_SZ 200   // Max size of packet [bytes]
 #define LOCAL_ADDR  1
+
+//------------------------------------------------------------------------------
+// Constants
+//------------------------------------------------------------------------------
+
+#define ARRAY_SZ  1<<(INDEX_SZ*8UL) // Length of array
+#define FRAME_SZ  (INDEX_SZ + DATA_SZ)
 
 //------------------------------------------------------------------------------
 // Validation (emits compiler messages if your settings are not valid)
@@ -32,6 +38,9 @@
 #elif DATA_SZ == 2
     #define Data_t int16_t
     #define UnsignedData_t uint16_t
+#elif DATA_SZ == 4
+    #define Data_t int32_t
+    #define UnsignedData_t uint32_t
 #else
     #error FT_CONFIG: Invalid DATA_SZ
 #endif

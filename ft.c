@@ -37,7 +37,7 @@ Port * FT_NewPort(PutFunc put, GetFunc get, EmptyFunc empty) {
     port->empty = empty;
 
     // allocate ring buffer for parsing
-    port->buffer = createBuffer(MAX_PCKT_SZ);
+    port->buffer = createBuffer(MAX_PCKT_SZ + 6);
     return port;
 }
 
