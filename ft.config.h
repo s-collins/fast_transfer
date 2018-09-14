@@ -15,8 +15,9 @@
 // Constants
 //------------------------------------------------------------------------------
 
-#define ARRAY_SZ  1<<(INDEX_SZ*8UL) // Length of array
-#define FRAME_SZ  (INDEX_SZ + DATA_SZ)
+#define ARRAY_SZ  1<<(INDEX_SZ*8)     // Size of array
+#define FRAME_SZ  (INDEX_SZ + DATA_SZ)  // Number of bytes per frame
+#define OVERHEAD  6                     // Number of non-payload bytes
 
 //------------------------------------------------------------------------------
 // Validation (emits compiler messages if your settings are not valid)

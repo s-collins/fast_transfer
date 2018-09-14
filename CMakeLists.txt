@@ -9,7 +9,6 @@ add_executable(ft.tests
     ft.crc.c
     ft.convert.c
     ft.parser.c
-    Convert.c
 )
 find_package(GTest REQUIRED)
 target_link_libraries(ft.tests PRIVATE GTest::GTest GTest::Main)

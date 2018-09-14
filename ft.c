@@ -6,7 +6,7 @@
 #include "ft.h"
 #include "ft.parser.h"
 #include "ft.crc.h"
-#include "Convert.h"
+#include "ft.convert.h"
 #include <stdlib.h>
 
 /*----------------------------- Local Variables ------------------------------*/
@@ -37,7 +37,7 @@ Port * FT_NewPort(PutFunc put, GetFunc get, EmptyFunc empty) {
     port->empty = empty;
 
     // allocate ring buffer for parsing
-    port->buffer = createBuffer(MAX_PCKT_SZ + 6);
+    port->buffer = createBuffer(MAX_PCKT_SZ + OVERHEAD);
     return port;
 }
 
@@ -48,8 +48,8 @@ void FT_DestroyPort(Port *port) {
 
 /*------------------------------ Initialization ------------------------------*/
 
+// initialize every value in array to zero
 void FT_Initialize () {
-    // initialize every value in array to zero
     for (int i = 0; i < ARRAY_SZ; ++i) {
         s_array[i] = 0;
         s_flags[i] = false;
@@ -103,11 +103,19 @@ void getBytesFromUART (Port * port) {
 
 /*--------------------------- Transmitting Packets ---------------------------*/
 
+// stages bytes for transmission
 void FT_ToSend(Index_t index, Data_t data) {
-    s_packet[s_packetIndex++] = getMsbFromUnsigned(index);
-    s_packet[s_packetIndex++] = getLsbFromUnsigned(index);
-    s_packet[s_packetIndex++] = getMsbFromSigned(data);
-    s_packet[s_packetIndex++] = getLsbFromSigned(data);
+    // Stage the index bytes
+    uint8_t index_bytes [INDEX_SZ];
+    slice_index_bytes(index, index_bytes);
+    for (int i = 0; i < INDEX_SZ; ++i)
+        s_packet[s_packetIndex++] = index_bytes[i];
+    
+    // Stage the data bytes
+    uint8_t data_bytes [DATA_SZ];
+    slice_data_bytes(data, data_bytes);
+    for (int i = 0; i < DATA_SZ; ++i)
+        s_packet[s_packetIndex++] = data_bytes[i];
 }
 
 void FT_ClearPacket() {

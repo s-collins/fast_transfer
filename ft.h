@@ -29,9 +29,9 @@ extern "C" {
 typedef struct PortRepresentation Port;
 
 /// Provided these aliases in order to de-clutter the function prototypes below.
-typedef void (*PutFunc) (uint8_t);
-typedef uint8_t (*GetFunc) ();
-typedef bool (*EmptyFunc) ();
+typedef void    (*PutFunc)   (uint8_t);
+typedef uint8_t (*GetFunc)   ();
+typedef bool    (*EmptyFunc) ();
 
 /*------------------------------------------------------------------------------
  * @brief   Allocates heap storage for a new Port object and assigns function
