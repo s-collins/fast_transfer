@@ -164,7 +164,8 @@ void Parser_crc ()
     // calculate the CRC code:
     // - future improvement: remove this unnecessary copying
     uint8_t message [MAX_PCKT_SZ];
-    for (int i = 0; i < m_length; ++i)
+    int i;
+    for (i = 0; i < m_length; ++i)
         message[i] = Buffer_get(m_buf, i + 5);
     uint8_t correct_crc = crc(message, m_length);
 
@@ -186,7 +187,7 @@ int Parser_status ()
 
 void Parser_trash_bytes (int num_bytes)
 {
-    for (int i = 0; i < num_bytes; ++i)
+    while (num_bytes-- > 0)
         Buffer_pop(m_buf);
 }
 
@@ -218,7 +219,8 @@ void Parser_write_message_data ()
     // Write the message into the array
     const int MSG_BEGIN = 5; 
     const int MSG_END = MSG_BEGIN + m_length;
-    for (int i = MSG_BEGIN; i < MSG_END; i += 3)
+    int i;
+    for (i = MSG_BEGIN; i < MSG_END; i += 3)
     {
         uint8_t index = Buffer_get(m_buf, i);
         uint16_t msb = Buffer_get(m_buf, i + 1);
@@ -232,7 +234,8 @@ void Parser_write_message_data ()
     }
 
     // Pop the bytes from the buffer
-    for (int i = 0; i < m_length + 6; ++i)
+    int n = m_length + 6;
+    while (n-- > 0)
         Buffer_pop(m_buf);
 }
 

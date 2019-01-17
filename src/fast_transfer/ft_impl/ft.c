@@ -37,7 +37,8 @@ FT_t * FT_Create (uint8_t address, void(*put)(uint8_t), uint8_t(*get)(), bool(*e
   // initialize local data:
   handle->address = address;
 
-  for (int i = 0; i < ARRAY_SZ; ++i) {
+  int i;
+  for (i = 0; i < ARRAY_SZ; ++i) {
     handle->array[i] = 0;
     handle->flags[i] = true;
   }
@@ -103,7 +104,8 @@ void FT_Send (FT_t * handle, uint8_t address)
 
     // add the payload
     uint8_t payload [MAX_PCKT_SZ];
-    for (int i = 0; i < payload_sz; ++i)
+    int i;
+    for (i = 0; i < payload_sz; ++i)
     {
         uint8_t next_byte = Buffer_pop(&handle->transmit_buf);
         payload[i] = next_byte;
