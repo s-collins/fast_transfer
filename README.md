@@ -38,13 +38,13 @@ git clone https://github.com/s-collins/fast_transfer.git
 6. Now, you can include the header "ft.h" in your code, as in the example below:
 
 ```C
-// Example: Demos FastTransfer API
+// Example: Incomplete program for demonstrating FastTransfer API
 
 #include "ft.h"
 
-//------------------------------------------------------------
+//--------------------------------------------------------------------
 // Callback Functions (user must implement these)
-//------------------------------------------------------------
+//--------------------------------------------------------------------
 
 void put (uint8_t byte)
 {
@@ -61,15 +61,9 @@ bool empty ()
     /* Return true iff a UART receive buffer has no bytes */
 }
 
-//------------------------------------------------------------
+//--------------------------------------------------------------------
 // Main Function
-//------------------------------------------------------------
-
-#define MY_ADDRESS         1
-#define CONTROLLER_ADDRESS 2
-
-int16_t voltage = 0;
-int16_t current = 0;
+//--------------------------------------------------------------------
 
 int main ()
 {
