@@ -243,7 +243,7 @@ void Parser_write_message_data ()
  * API Function
  */
 
-void parse (Buffer_t * buf, int16_t * arr, bool * flags, int arr_size, uint8_t address)
+void parse (Buffer_t * buf, uint16_t * arr, bool * flags, int arr_size, uint8_t address)
 {
     while (1)
     {

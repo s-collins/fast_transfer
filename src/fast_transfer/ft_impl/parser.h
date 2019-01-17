@@ -6,7 +6,7 @@ extern "C" {
 
 #include "buffer.h"
 
-void parse (Buffer_t * buf, int16_t * arr, bool * flags, int arr_size, uint8_t address);
+void parse (Buffer_t * buf, uint16_t * arr, bool * flags, int arr_size, uint8_t address);
 
 #ifdef __cplusplus
 };
