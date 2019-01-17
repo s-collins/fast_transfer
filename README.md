@@ -77,7 +77,7 @@ int main ()
         // handle
         FT_Receive(ft_handle);
         
-        // if speed value has changed, read it
+        // if value at some index has changed, read it
         if (FT_Modified(ft_handle, DRIVE_INDEX))
         {
             drive_signal = FT_Read(ft_handle, DRIVE_INDEX);
