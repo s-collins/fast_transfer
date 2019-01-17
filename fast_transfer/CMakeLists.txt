@@ -1,0 +1,10 @@
+add_library(fast_transfer
+  buffer.c
+  crc.c
+  ft.c
+  parser.c
+)
+target_include_directories(fast_transfer
+  PUBLIC
+    .
+)

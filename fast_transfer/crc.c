@@ -1,4 +1,4 @@
-#include "ft.crc.h"
+#include "crc.h"
 
 /**
  * @brief   Calculates the CRC code for a packet.
@@ -9,7 +9,7 @@
  * 
  * @return  Returns the CRC code for the given packet.
  */
-uint8_t crc (uint8_t const *arr, const uint8_t size) {
+uint8_t crc (uint8_t const *arr, uint8_t size) {
     const uint8_t POLYNOMIAL = 0x8C;
     uint8_t value = 0x00;
     for (uint8_t i = 0; i < size; ++i) {
