@@ -1,7 +1,7 @@
 # FastTransfer
-UA Robotics Team's custom protocol for serial communication.
+## UA Robotics Team's custom protocol for serial communication.
 
-## Adding FastTransfer to a MPLAB Project
+### Adding FastTransfer to a MPLAB Project
 
 Here is a simple procedure for adding the FastTransfer library to
 an existing project in Microchip's MPLAB IDE:
