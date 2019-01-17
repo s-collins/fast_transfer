@@ -4,5 +4,5 @@ project(fast_transfer)
 include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 conan_basic_setup(NO_OUTPUT_DIRS)
 
-add_subdirectory(fast_transfer)
+add_subdirectory(src)
 add_subdirectory(tests)

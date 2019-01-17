@@ -1,6 +1,6 @@
 #include "parser.h"
 #include "buffer.h"
-#include "ft_config.h"
+#include "../ft_config.h"
 #include "crc.h"
 
 /*

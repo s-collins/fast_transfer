@@ -1,4 +1,4 @@
-#include "ft.h"
+#include "../ft.h"
 #include "buffer.h"
 #include "crc.h"
 #include "parser.h"

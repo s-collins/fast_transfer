@@ -8,7 +8,7 @@ extern "C" {
 #include <stdint.h>
 #include <stddef.h>
 
-#include "ft_config.h"
+#include "../ft_config.h"
 
 typedef struct {
   uint8_t data [MAX_PCKT_SZ];
