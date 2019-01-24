@@ -20,7 +20,7 @@
  */
 
 static Buffer_t * m_buf;
-static int16_t *  m_arr;
+static uint16_t *  m_arr;
 static bool *     m_flags;
 static int        m_arr_size;
 static uint8_t    m_address;
@@ -33,7 +33,7 @@ static int        m_status;
  * Helper Functions
  */
 
-void Parser_init (Buffer_t * buf, int16_t * arr, bool * flags, int arr_size, uint8_t address)
+void Parser_init (Buffer_t * buf, uint16_t * arr, bool * flags, int arr_size, uint8_t address)
 {
     m_buf = buf;
     m_arr = arr;
