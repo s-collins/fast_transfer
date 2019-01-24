@@ -9,6 +9,12 @@ extern "C" {
 #include "ft_config.h"
 #include "ft_impl/buffer.h"
 
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//                    Handle Type for FastTransfer Instance                   //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
+
 struct FastTransferHandle {
   // local data:
   uint8_t  address;
@@ -30,10 +36,21 @@ typedef struct FastTransferHandle FT_t;
   /// FT_t is an alias for a type representing a single fast-transfer handle.
   ///--------------------------------------------------------------------------
 
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//                            FastTransfer Methods                            //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
+
 void FT_Init (FT_t * handle,
               uint8_t address,
               void(*f_put)(uint8_t), uint8_t(*f_get)(), bool(*f_empty)());
   ///--------------------------------------------------------------------------
+  /// Initializes the FastTransfer instance associated with the given handle
+  /// by setting all values of the array to 0 and all modification flags
+  /// to TRUE.  Also connects the instance to serial transmit and receive
+  /// buffers via the three callback functions.
+  ///
   /// Parameters:
   ///   - handle:  Memory address of a handle to a FastTransfer instance.
   ///   - address: FastTransfer address of the node.
