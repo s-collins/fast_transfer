@@ -1,39 +1,16 @@
 #include "../ft.h"
-#include "buffer.h"
 #include "crc.h"
 #include "parser.h"
 #include <stdlib.h>
 
 /*
- * Type to serve as a handle to FastTransfer data.
- */
-
-struct FastTransferHandle {
-
-  // local data:
-  uint8_t  address;
-  uint16_t array [ARRAY_SZ];
-  bool     flags [ARRAY_SZ];
-
-  // buffers:
-  Buffer_t receive_buf;
-  Buffer_t transmit_buf;
-
-  // callbacks (for interacting with serial communication hardware):
-  void(*put)(uint8_t);
-  uint8_t(*get)();
-  bool(*empty)();
-
-};
-
-/*
  * Functions for interacting with FastTransfer instances.
  */
 
-FT_t * FT_Create (uint8_t address, void(*put)(uint8_t), uint8_t(*get)(), bool(*empty)())
+void FT_Init (FT_t * handle,
+              uint8_t address,
+              void(*put)(uint8_t), uint8_t(*get)(), bool(*empty)())
 {
-  FT_t * handle = (FT_t*)malloc(sizeof(FT_t));
-
   // initialize local data:
   handle->address = address;
 
@@ -51,8 +28,6 @@ FT_t * FT_Create (uint8_t address, void(*put)(uint8_t), uint8_t(*get)(), bool(*e
   // initialize receive/transmit buffers:
   Buffer_init(&handle->receive_buf);
   Buffer_init(&handle->transmit_buf);
-
-  return handle;
 }
 
 int16_t FT_Read (FT_t * handle, uint8_t index)

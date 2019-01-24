@@ -7,29 +7,40 @@ extern "C" {
 #include <stdbool.h>
 #include <stdint.h>
 #include "ft_config.h"
+#include "ft_impl/buffer.h"
+
+struct FastTransferHandle {
+  // local data:
+  uint8_t  address;
+  uint16_t array [ARRAY_SZ];
+  bool     flags [ARRAY_SZ];
+
+  // buffers:
+  Buffer_t receive_buf;
+  Buffer_t transmit_buf;
+
+  // callbacks (for interacting with serial communication hardware):
+  void(*put)(uint8_t);
+  uint8_t(*get)();
+  bool(*empty)();
+};
 
 typedef struct FastTransferHandle FT_t;
   ///--------------------------------------------------------------------------
   /// FT_t is an alias for a type representing a single fast-transfer handle.
-  ///   - "FastTransferHandle" is defined in the implementation file
   ///--------------------------------------------------------------------------
 
-FT_t * FT_Create (uint8_t address,
-                  void(*f_put)(uint8_t), uint8_t(*f_get)(), bool(*f_empty)());
+void FT_Init (FT_t * handle,
+              uint8_t address,
+              void(*f_put)(uint8_t), uint8_t(*f_get)(), bool(*f_empty)());
   ///--------------------------------------------------------------------------
-  /// Allocates heap memory for a fast-transfer instance and returns a handle
-  /// to the instance.
-  /// 
   /// Parameters:
+  ///   - handle:  Memory address of a handle to a FastTransfer instance.
+  ///   - address: FastTransfer address of the node.
   ///   - f_put:   Callback function that adds a byte to a transmit buffer.
   ///   - f_get:   Callback function that reads a byte from a receive buffer.
   ///   - f_empty: Callback function that returns true iff receive buffer
   ///              contains 0 bytes.
-  ///--------------------------------------------------------------------------
-
-void FT_Destroy (FT_t * handle);
-  ///--------------------------------------------------------------------------
-  /// Releases resources associated with given fast-transfer handle.
   ///--------------------------------------------------------------------------
 
 int16_t FT_Read (FT_t * handle, uint8_t index);

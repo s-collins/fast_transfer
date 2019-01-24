@@ -18,10 +18,11 @@ TEST (FTReceiveTests, ReceiveMessageWithOneValue)
     MockMessage m (0x01, FT_ADDRESS, {0x01, 0xFF, 0xFF});
     MockSerial_populate_receive_buffer({m});
 
-    FT_t * ft = FT_Create(FT_ADDRESS, MockSerial_put, MockSerial_get, MockSerial_empty);
-    FT_Receive(ft);
+    FT_t ft;
+    FT_Init(&ft, FT_ADDRESS, MockSerial_put, MockSerial_get, MockSerial_empty);
+    FT_Receive(&ft);
 
-    EXPECT_EQ(-1, FT_Read(ft, 1));
+    EXPECT_EQ(-1, FT_Read(&ft, 1));
 
     // Reset the mock serial buffer
     MockSerial_teardown();
@@ -33,11 +34,13 @@ TEST (FTReceiveTests, ReceiveMessageWithTwoValues)
     MockMessage m (0x01, FT_ADDRESS, {0x01, 0xFF, 0xFF, 0x10, 0xFF, 0xFF});
     MockSerial_populate_receive_buffer({m});
 
-    FT_t * ft = FT_Create(2, MockSerial_put, MockSerial_get, MockSerial_empty);
-    FT_Receive(ft);
+    FT_t ft;
+    FT_Init(&ft, FT_ADDRESS, MockSerial_put, MockSerial_get, MockSerial_empty);
 
-    EXPECT_EQ(-1, FT_Read(ft, 0x01));
-    EXPECT_EQ(-1, FT_Read(ft, 0x10));
+    FT_Receive(&ft);
+
+    EXPECT_EQ(-1, FT_Read(&ft, 0x01));
+    EXPECT_EQ(-1, FT_Read(&ft, 0x10));
 
     // Reset the mock serial buffer
     MockSerial_teardown();
@@ -49,15 +52,17 @@ TEST (FTReceiveTests, ReceiveTwoSeparateMessages)
     MockMessage m2 (0x01, FT_ADDRESS, {0x40, 0xFF, 0xFF});
     MockSerial_populate_receive_buffer({m1, m2});
 
-    FT_t * ft = FT_Create(2, MockSerial_put, MockSerial_get, MockSerial_empty);
-    FT_Receive(ft);
+    FT_t ft;
+    FT_Init(&ft, FT_ADDRESS, MockSerial_put, MockSerial_get, MockSerial_empty);
+
+    FT_Receive(&ft);
 
     // values from first message
-    EXPECT_EQ(-1, FT_Read(ft, 0x01));
-    EXPECT_EQ(-1, FT_Read(ft, 0x10));
+    EXPECT_EQ(-1, FT_Read(&ft, 0x01));
+    EXPECT_EQ(-1, FT_Read(&ft, 0x10));
 
     // value from second message
-    EXPECT_EQ(-1, FT_Read(ft, 0x40));
+    EXPECT_EQ(-1, FT_Read(&ft, 0x40));
 
     MockSerial_teardown();
 }
@@ -73,21 +78,22 @@ TEST (FTReceiveTests, ValidMessageStraddlingTwoCallsToReceiveFunction)
     std::deque<uint8_t> second_half (bytes.begin() + mid_index, bytes.end());
 
     // create the handle for FastTransfer
-    FT_t * ft = FT_Create(2, MockSerial_put, MockSerial_get, MockSerial_empty);
+    FT_t ft;
+    FT_Init(&ft, FT_ADDRESS, MockSerial_put, MockSerial_get, MockSerial_empty);
 
     // receive the first half
     MockSerial_populate_receive_buffer(first_half);
-    FT_Receive(ft);
+    FT_Receive(&ft);
 
-    EXPECT_EQ(0, FT_Read(ft, 0x10));
-    EXPECT_EQ(0, FT_Read(ft, 0x20));
+    EXPECT_EQ(0, FT_Read(&ft, 0x10));
+    EXPECT_EQ(0, FT_Read(&ft, 0x20));
 
     // receive the second half
     MockSerial_populate_receive_buffer(second_half);
-    FT_Receive(ft);
+    FT_Receive(&ft);
 
-    EXPECT_EQ(-1, FT_Read(ft, 0x10));
-    EXPECT_EQ(-1, FT_Read(ft, 0x20));
+    EXPECT_EQ(-1, FT_Read(&ft, 0x10));
+    EXPECT_EQ(-1, FT_Read(&ft, 0x20));
 
     MockSerial_teardown();
 }
@@ -104,11 +110,12 @@ TEST (FTReceiveTests, MessageWithWrongAddressDoesNotChangeArray)
     MockMessage m (0x01, 1 + FT_ADDRESS, {0x01, 0xFF, 0xFF});
     MockSerial_populate_receive_buffer({m});
 
-    FT_t * ft = FT_Create(2, MockSerial_put, MockSerial_get, MockSerial_empty);
-    FT_Receive(ft);
+    FT_t ft;
+    FT_Init(&ft, FT_ADDRESS, MockSerial_put, MockSerial_get, MockSerial_empty);
+    FT_Receive(&ft);
 
     for (int i = 0; i < ARRAY_SZ; ++i)
-        EXPECT_EQ(0, FT_Read(ft, i));
+        EXPECT_EQ(0, FT_Read(&ft, i));
 
     // Reset the mock serial buffer
     MockSerial_teardown();
@@ -121,11 +128,13 @@ TEST (FTReceiveTests, MessageWithInvalidLengthDoesNotChangeArray)
     m.set_length(4);
     MockSerial_populate_receive_buffer({m});
 
-    FT_t * ft = FT_Create(2, MockSerial_put, MockSerial_get, MockSerial_empty);
-    FT_Receive(ft);
+    FT_t ft;
+    FT_Init(&ft, FT_ADDRESS, MockSerial_put, MockSerial_get, MockSerial_empty);
+
+    FT_Receive(&ft);
 
     for (int i = 0; i < ARRAY_SZ; ++i)
-        EXPECT_EQ(0, FT_Read(ft, i));
+        EXPECT_EQ(0, FT_Read(&ft, i));
 
     // Reset the mock serial buffer
     MockSerial_teardown();
@@ -138,11 +147,13 @@ TEST (FTReceiveTests, MessageWithWrongCRCDoesNotChangeArray)
     m.set_crc(0xFF);
     MockSerial_populate_receive_buffer({m});
 
-    FT_t * ft = FT_Create(2, MockSerial_put, MockSerial_get, MockSerial_empty);
-    FT_Receive(ft);
+    FT_t ft;
+    FT_Init(&ft, FT_ADDRESS, MockSerial_put, MockSerial_get, MockSerial_empty);
+
+    FT_Receive(&ft);
 
     for (int i = 0; i < ARRAY_SZ; ++i)
-        EXPECT_EQ(0, FT_Read(ft, i));
+        EXPECT_EQ(0, FT_Read(&ft, i));
 
     // Reset the mock serial buffer
     MockSerial_teardown();
@@ -155,11 +166,13 @@ TEST (FTReceiveTests, MessageWithWrongFirstByteDoesNotChangeArray)
     m.set_first_byte(0xFF);
     MockSerial_populate_receive_buffer({m});
 
-    FT_t * ft = FT_Create(2, MockSerial_put, MockSerial_get, MockSerial_empty);
-    FT_Receive(ft);
+    FT_t ft;
+    FT_Init(&ft, FT_ADDRESS, MockSerial_put, MockSerial_get, MockSerial_empty);
+
+    FT_Receive(&ft);
 
     for (int i = 0; i < ARRAY_SZ; ++i)
-        EXPECT_EQ(0, FT_Read(ft, i));
+        EXPECT_EQ(0, FT_Read(&ft, i));
 
     // Reset the mock serial buffer
     MockSerial_teardown();
@@ -172,11 +185,13 @@ TEST (FTReceiveTests, MessageWithWrongSecondByteDoesNotChangeArray)
     m.set_second_byte(0xFF);
     MockSerial_populate_receive_buffer({m});
 
-    FT_t * ft = FT_Create(2, MockSerial_put, MockSerial_get, MockSerial_empty);
-    FT_Receive(ft);
+    FT_t ft;
+    FT_Init(&ft, FT_ADDRESS, MockSerial_put, MockSerial_get, MockSerial_empty);
+
+    FT_Receive(&ft);
 
     for (int i = 0; i < ARRAY_SZ; ++i)
-        EXPECT_EQ(0, FT_Read(ft, i));
+        EXPECT_EQ(0, FT_Read(&ft, i));
 
     // Reset the mock serial buffer
     MockSerial_teardown();
@@ -194,11 +209,13 @@ TEST (FTReceiveTests, ValidMessageAfterMessageWithWrongAddress)
     MockMessage m2(0x01, FT_ADDRESS, {0x10, 0xFF, 0xFF});
     MockSerial_populate_receive_buffer({m1, m2});
 
-    FT_t * ft = FT_Create(2, MockSerial_put, MockSerial_get, MockSerial_empty);
-    FT_Receive(ft);
+    FT_t ft;
+    FT_Init(&ft, FT_ADDRESS, MockSerial_put, MockSerial_get, MockSerial_empty);
 
-    EXPECT_EQ(0, FT_Read(ft, 0x01));
-    EXPECT_EQ(-1, FT_Read(ft, 0x10));
+    FT_Receive(&ft);
+
+    EXPECT_EQ(0, FT_Read(&ft, 0x01));
+    EXPECT_EQ(-1, FT_Read(&ft, 0x10));
 
     MockSerial_teardown();
 }
@@ -210,11 +227,13 @@ TEST (FTReceiveTests, ValidMessageAfterMessageWithWrongCRC)
     MockMessage m2(0x01, FT_ADDRESS, {0x10, 0xFF, 0xFF});
     MockSerial_populate_receive_buffer({m1, m2});
 
-    FT_t * ft = FT_Create(2, MockSerial_put, MockSerial_get, MockSerial_empty);
-    FT_Receive(ft);
+    FT_t ft;
+    FT_Init(&ft, FT_ADDRESS, MockSerial_put, MockSerial_get, MockSerial_empty);
 
-    EXPECT_EQ(0, FT_Read(ft, 0x01));
-    EXPECT_EQ(-1, FT_Read(ft, 0x10));
+    FT_Receive(&ft);
+
+    EXPECT_EQ(0, FT_Read(&ft, 0x01));
+    EXPECT_EQ(-1, FT_Read(&ft, 0x10));
 
     MockSerial_teardown();
 }
@@ -227,17 +246,19 @@ TEST (FTReceiveTests, MessageWithWrongCRCBetweenTwoValidMessages)
     MockMessage m3(0x01, FT_ADDRESS, {0x30, 0xFF, 0xFF});
     MockSerial_populate_receive_buffer({m1, m2, m3});
 
-    FT_t * ft = FT_Create(2, MockSerial_put, MockSerial_get, MockSerial_empty);
-    FT_Receive(ft);
+    FT_t ft;
+    FT_Init(&ft, FT_ADDRESS, MockSerial_put, MockSerial_get, MockSerial_empty);
+
+    FT_Receive(&ft);
 
     // value from first message
-    EXPECT_EQ(-1, FT_Read(ft, 0x10));
+    EXPECT_EQ(-1, FT_Read(&ft, 0x10));
 
     // no change from second message
-    EXPECT_EQ(0, FT_Read(ft, 0x20));
+    EXPECT_EQ(0, FT_Read(&ft, 0x20));
 
     // value from third message
-    EXPECT_EQ(-1, FT_Read(ft, 0x30));
+    EXPECT_EQ(-1, FT_Read(&ft, 0x30));
 
     MockSerial_teardown();
 }
