@@ -68,27 +68,28 @@ bool empty ()
 int main ()
 {
     // create a handle to a FastTransfer instance
-    FT_t * ft_handle = FT_Create(MY_ADDRESS, put, get, empty);
+    FT_t ft_handle;
+    FT_Init(&ft_handle, MY_ADDRESS, put, get, empty);
     
     while (1)
     {
         // parse incoming messages and write the resulting
         // data values into the array associated with the
         // handle
-        FT_Receive(ft_handle);
+        FT_Receive(&ft_handle);
         
         // if value at some index has changed, read it
-        if (FT_Modified(ft_handle, DRIVE_INDEX))
+        if (FT_Modified(&ft_handle, DRIVE_INDEX))
         {
-            drive_signal = FT_Read(ft_handle, DRIVE_INDEX);
+            drive_signal = FT_Read(&ft_handle, DRIVE_INDEX);
         }
         
         // populate the payload of a packet
-        FT_ToSend(ft_handle, CURRENT_INDEX, current);
-        FT_ToSend(ft_handle, VOLTAGE_INDEX, voltage);
+        FT_ToSend(&ft_handle, CURRENT_INDEX, current);
+        FT_ToSend(&ft_handle, VOLTAGE_INDEX, voltage);
         
         // send the packet
-        FT_Send(ft_handle, CONTROLLER_ADDRESS);
+        FT_Send(&ft_handle, CONTROLLER_ADDRESS);
         
         /* ... */
     }
