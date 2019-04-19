@@ -49,7 +49,7 @@ TEST (BufferFull, FullReturnsTrueAfterPushingMaxAmount)
 {
   Buffer_t b;
   Buffer_init(&b);
-  for (int i = 0; i < 256; ++i)
+  for (int i = 0; i < MAX_PCKT_SZ; ++i)
     Buffer_push(&b, 1);
   EXPECT_TRUE(Buffer_full(&b));
 }

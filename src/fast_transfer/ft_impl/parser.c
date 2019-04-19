@@ -243,8 +243,9 @@ void Parser_write_message_data ()
  * API Function
  */
 
-void parse (Buffer_t * buf, uint16_t * arr, bool * flags, int arr_size, uint8_t address)
+int parse (Buffer_t * buf, uint16_t * arr, bool * flags, int arr_size, uint8_t address)
 {
+    int num_valid_messages = 0;
     while (1)
     {
         // reset the parsing module
@@ -252,7 +253,7 @@ void parse (Buffer_t * buf, uint16_t * arr, bool * flags, int arr_size, uint8_t 
 
         if (Buffer_empty(m_buf))
             // exit because no more data in buffer
-            return;
+            return num_valid_messages;
 
         Parser_message();
         int status = Parser_status();
@@ -261,12 +262,13 @@ void parse (Buffer_t * buf, uint16_t * arr, bool * flags, int arr_size, uint8_t 
         {
             case PARSE_STATUS_GOOD:
                 Parser_write_message_data();
+                ++num_valid_messages;
                 break;
 
             case PARSE_STATUS_NOT_ENOUGH_DATA:
                 // exit because there is not enough data in the buffer
                 // to finish the message
-                return;
+                return num_valid_messages;
 
             case PARSE_STATUS_BAD_FIRST_BYTE:
             case PARSE_STATUS_BAD_SECOND_BYTE:

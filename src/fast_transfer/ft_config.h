@@ -15,7 +15,7 @@ extern "C" {
 #define ARRAY_SZ 256
 // shall be less than or equal to 2^8 (256) because index is uint8_t
 
-#define MAX_PCKT_SZ 99
+#define MAX_PCKT_SZ 3000
 // maximum number of bytes in a packet
 
 ////////////////////////////////////////////////////////////////////////////////

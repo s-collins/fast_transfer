@@ -41,14 +41,16 @@ bool FT_Modified (FT_t * handle, uint8_t index)
   return handle->flags[index];
 }
 
-void FT_Receive (FT_t * handle)
+int FT_Receive (FT_t * handle)
 {
   // transfer bytes from serial buffer into local buffer
   while (!handle->empty() && !Buffer_full(&handle->receive_buf))
     Buffer_push(&handle->receive_buf, handle->get());
 
   // parse/extract messages from local buffer and update local array
-  parse(&handle->receive_buf, handle->array, handle->flags, ARRAY_SZ, handle->address);
+  int num_valid_messages = parse(&handle->receive_buf, handle->array, handle->flags, ARRAY_SZ, handle->address);
+
+  return num_valid_messages;
 }
 
 

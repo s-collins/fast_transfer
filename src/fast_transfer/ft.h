@@ -73,7 +73,7 @@ bool FT_Modified (FT_t * handle, uint8_t index);
   /// given index has not already been read.
   ///--------------------------------------------------------------------------
 
-void FT_Receive (FT_t * handle);
+int FT_Receive (FT_t * handle);
   ///--------------------------------------------------------------------------
   /// Reads the bytes from the serial buffer, parses them, and updates the
   /// local array if any valid messages were received.

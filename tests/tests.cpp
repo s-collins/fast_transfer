@@ -3,3 +3,4 @@
 #include "ft_receive_tests.h"
 #include "ft_send_tests.h"
 #include "buffer_tests.h"
+#include "inconsistent_message.h"
